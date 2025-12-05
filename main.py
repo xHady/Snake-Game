@@ -19,13 +19,14 @@ MoveStarted = False
 # ------------------- Configure Tkinter ----------------------------
 root = Tk()
 root.title("Snake Game")
-root.configure(background="Black")
+canvas.pack()
+root.configure(background="saddle brown")
 root.minsize(800, 800)
 root.geometry("800x800")
 # ------------------------------------------------------------------
 
 # ------------------- Configure Canvas ----------------------------
-canvas = Canvas(root, width=800, height=800, bg="Light Green")
+canvas = Canvas(root, width=800, height=800, bg="saddle brown", highlightbackground="saddle brown")
 canvas.pack()
 # ------------------------------------------------------------------
 
@@ -60,8 +61,9 @@ def drawRect(RectPos, color): # Draws A Rectangle ( Duhh )
     return canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="")
 
 def movApple(): # Moves apple location to a proper one
-    x1 = random.randint(1, 18) * cellSize
-    y1 = random.randint(1, 18) * cellSize
+    global rows, columns
+    x1 = random.randint(1, rows - 2) * cellSize
+    y1 = random.randint(1, columns - 2) * cellSize
     x2 = x1 + cellSize
     y2 = y1 + cellSize
     canvas.coords(Apple, x1, y1, x2, y2)
@@ -103,7 +105,7 @@ def moveSnakeNode(rectId): # move specific Node
 
     x = canvas.coords(SnakePosition[0])[0] / cellSize
     y = canvas.coords(SnakePosition[0])[1] / cellSize
-    if ( x == 0 ) or ( y == 0 ) or ( x == 19 ) or ( y == 19 ):
+    if ( x == 0 ) or ( y == 0 ) or ( x == rows -1 ) or ( y == columns - 1):
         global game_started
         game_started = False
 
@@ -134,7 +136,7 @@ def drawMainGrid(): # Draw Basic Shape
     for r in range(rows):
         for c in range(columns):
             color = gridColors[(r + c) % 2]
-            if ( r == 0 ) or ( c == 0 ) or ( r == 19 ) or ( c == 19 ):
+            if ( r == 0 ) or ( c == 0 ) or ( r == rows - 1 ) or ( c == columns - 1 ):
                 color = "saddle brown"
             drawRect([r, c], color)
 
