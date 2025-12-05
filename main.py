@@ -19,7 +19,6 @@ MoveStarted = False
 # ------------------- Configure Tkinter ----------------------------
 root = Tk()
 root.title("Snake Game")
-canvas.pack()
 root.configure(background="saddle brown")
 root.minsize(800, 800)
 root.geometry("800x800")
@@ -151,3 +150,4 @@ while game_started:
         moveSnake()
     time.sleep(1 / speed)
     root.update()
+
