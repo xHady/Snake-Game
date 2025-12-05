@@ -12,6 +12,7 @@ rows = 20
 columns = 20
 cellSize = 40
 direction = 0 # 0 -> Right, 1 -> Up, 2 -> Down, 3 -> Left
+score = 0
 SnakePosition = []
 MoveStarted = False
 # ------------------------------------------------------------------
@@ -27,8 +28,13 @@ root.geometry("800x800")
 # ------------------- Configure Canvas ----------------------------
 canvas = Canvas(root, width=800, height=800, bg="saddle brown", highlightbackground="saddle brown")
 canvas.pack()
+
 # ------------------------------------------------------------------
 
+def updateScore(sc):
+    global score, scoreText
+    score += sc
+    canvas.itemconfigure(scoreText, text="Score : " + str(score))
 
 def on_press(event): # handle Keyboard
         # Left Arrow 37, 65
@@ -125,6 +131,7 @@ def moveSnake(): # Move entire snake hhh
             if canvas.coords(Apple) == canvas.coords(i): # Head ate apple
                 # print("Ate Apple")
                 addSnakeNode()
+                updateScore(100)
                 movApple()
             
         else:
@@ -139,15 +146,23 @@ def drawMainGrid(): # Draw Basic Shape
                 color = "saddle brown"
             drawRect([r, c], color)
 
-root.bind("<KeyRelease>", on_press)
-drawMainGrid()
-SnakePosition.append(drawRect([10, 10], "Black"))
-SnakePosition.append(drawRect([10, 9], "Gray"))
-Apple = drawRect([3, 3], "Red")
+def intializeGame():
+    root.bind("<KeyRelease>", on_press)
+    drawMainGrid()
+    SnakePosition.append(drawRect([10, 10], "Black"))
+    SnakePosition.append(drawRect([10, 9], "Gray"))
+
+def addObjectstoUI():
+
+    global score, Apple, scoreText
+    Apple = drawRect([3, 3], "Red")
+    scoreText = canvas.create_text(50, 20, text="Score : 0", font=("Pursia", 20), anchor=W)
+
+intializeGame()
+addObjectstoUI()
 game_started = True
 while game_started:
     if MoveStarted:
         moveSnake()
-    time.sleep(1 / speed)
     root.update()
-
+    time.sleep(1 / speed)
