@@ -1,6 +1,5 @@
 from tkinter import *
 from tkinter import ttk
-import time
 import random
 
     
@@ -161,8 +160,9 @@ def addObjectstoUI():
 intializeGame()
 addObjectstoUI()
 game_started = True
+
 while game_started:
     if MoveStarted:
         moveSnake()
     root.update()
-    time.sleep(1 / speed)
+    root.after(int(1000 / speed))
