@@ -19,12 +19,15 @@ This lightweight project requires no external game engines and demonstrates canv
   
   - 🎨 Clean canvas rendering
 
+  - 💫 Score Counter
+
 ## 🖥️ Controls
 
   - Move Up	↑ or W
   - Move Down	↓ or S
   - Move Left	← or A
   - Move Right	→ or D
+  - Pause Game	→ or P
 
 ## 📦 Requirements
 
