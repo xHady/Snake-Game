@@ -27,7 +27,7 @@ This lightweight project requires no external game engines and demonstrates canv
   - Move Down	↓ or S
   - Move Left	← or A
   - Move Right	→ or D
-  - Pause Game	→ or P
+  - Pause Game P
 
 ## 📦 Requirements
 
