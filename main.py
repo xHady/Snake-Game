@@ -11,6 +11,7 @@ rows = 20
 columns = 20
 cellSize = 40
 direction = 0 # 0 -> Right, 1 -> Up, 2 -> Down, 3 -> Left
+next_direction = 0 # stores last direction state
 score = 0
 SnakePosition = []
 MoveStarted = False
@@ -42,19 +43,22 @@ def on_press(event): # handle Keyboard
         # Up Arrow 38, 87
         global direction
         global MoveStarted
+        MoveStarted = True
+        global next_direction
         if ( event.keycode == 37 or event.keycode == 65 ) and direction != 0 and direction != 3:
             # print("left")
-            direction = 3
+            next_direction = 3
         elif ( event.keycode == 40 or event.keycode == 83 ) and direction != 1 and direction != 2:
             # print("Down")
-            direction = 2
+            next_direction = 2
         elif ( event.keycode == 39 or event.keycode == 68 ) and direction != 3 and direction != 0:
             # print("Right")
-            direction = 0
+            next_direction = 0
         elif ( event.keycode == 38 or event.keycode == 87 ) and direction != 2 and direction != 1:
             # print("Up")
-            direction = 1
-        MoveStarted = True
+            next_direction = 1
+        elif( event.keycode == 80 ):
+            MoveStarted = False
 
 def drawRect(RectPos, color): # Draws A Rectangle ( Duhh )
 
@@ -79,7 +83,7 @@ def addSnakeNode(): # simple Algorithm to add Node to Snake Tail
     lastNodeX = canvas.coords(SnakePosition[len(SnakePosition) - 1])[0] / cellSize
     lastNodeY = canvas.coords(SnakePosition[len(SnakePosition) - 1])[1] / cellSize
     lastTwoNodesXCoords = lastNodeX - canvas.coords(SnakePosition[len(SnakePosition) - 2])[0] / cellSize
-    lastTwoNodesYCoords = lastNodeY - canvas.coords(SnakePosition[len(SnakePosition) - 2])[1]/ cellSize
+    lastTwoNodesYCoords = lastNodeY - canvas.coords(SnakePosition[len(SnakePosition) - 2])[1] / cellSize
     
     
     if lastTwoNodesXCoords == 0 and lastTwoNodesYCoords > 0:
@@ -91,30 +95,38 @@ def addSnakeNode(): # simple Algorithm to add Node to Snake Tail
     elif lastTwoNodesXCoords > 0 and lastTwoNodesYCoords == 0:
         # print("Add Node Right")
         SnakePosition.append(drawRect([lastNodeX, lastNodeY + 1], "Gray"))
-    elif lastTwoNodesXCoords < 0 and lastTwoNodesYCoords == 0:
+    else: #lastTwoNodesXCoords < 0 and lastTwoNodesYCoords == 0:
         # print("Add Node Left")
         SnakePosition.append(drawRect([lastNodeX, lastNodeY - 1], "Gray"))
 
+def getNextPos():
+    if direction == 0: # Right
+        return [cellSize, 0]
+    elif direction == 1: # Up
+        return [0, -1 * cellSize]
+    elif direction == 2: # Down
+        return [0, cellSize]
+    elif direction == 3: # Left
+        return [-1 * cellSize, 0]
+    
+def getNextCoords(currCoords):
+    next_pos = getNextPos()
+    x1 = currCoords[0] + next_pos[0]
+    x2 = currCoords[1] + next_pos[1]
+    y1 = x1 + cellSize
+    y2 = x2 + cellSize
+    return [x1, x2, y1, y2]
 
 def moveSnakeNode(rectId): # move specific Node
     # drawRect(RectPos, color)
-    if direction == 0: # Right
-        canvas.move(rectId, cellSize, 0)
-    elif direction == 1: # Up
-        canvas.move(rectId, 0, -1 * cellSize)
-    elif direction == 2: # Down
-        canvas.move(rectId, 0, cellSize)
-    elif direction == 3: # Left
-        canvas.move(rectId, -1 * cellSize, 0)
+    nextPos = getNextPos()
+    canvas.move(rectId, nextPos[0], nextPos[1])
 
     x = canvas.coords(SnakePosition[0])[0] / cellSize
     y = canvas.coords(SnakePosition[0])[1] / cellSize
-    if ( x == 0 ) or ( y == 0 ) or ( x == rows -1 ) or ( y == columns - 1):
-        global game_started
-        game_started = False
 
 def moveSnake(): # Move entire snake hhh
-    global game_started
+    global game_started, next_direction, direction
     last_pos = canvas.coords(SnakePosition[len(SnakePosition) - 1])
     x = last_pos[0] / cellSize
     y = last_pos[1] / cellSize
@@ -122,11 +134,16 @@ def moveSnake(): # Move entire snake hhh
         tempcord = canvas.coords(i)
         if i == SnakePosition[0]:
             headSnakeCords = canvas.coords(i)
-            moveSnakeNode(i)
-            for part in SnakePosition:
-                if canvas.coords(part) == headSnakeCords: # Snake ate his own body :(
+            direction = next_direction # get last direction
+            next_coords = getNextCoords(headSnakeCords)
+            if next_coords[0] / cellSize == 0 or next_coords[1] / cellSize == columns - 1 or next_coords[1] / cellSize == 0 or next_coords[0] / cellSize == rows - 1:
                     game_started = False 
                     return
+            for part in SnakePosition:
+                if canvas.coords(part) == next_coords: # Snake ate his own body :(
+                    game_started = False 
+                    return
+            moveSnakeNode(i)
             if canvas.coords(Apple) == canvas.coords(i): # Head ate apple
                 # print("Ate Apple")
                 addSnakeNode()
